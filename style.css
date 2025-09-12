@@ -1,0 +1,72 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+}
+
+#game-board {
+    display: grid;
+    grid-template-rows: repeat(6, 60px);
+    grid-gap: 10px;
+    width: 320px;
+    margin: 20px auto;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(5, 60px);
+    gap: 5px;
+}
+
+.cell {
+    border: 2px solid #999;
+    width: 60px;
+    height: 60px;
+    font-size: 32px;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    transition: background-color 0.3s ease;
+}
+
+input, select, button {
+    margin: 10px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+#timer {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#score {
+    font-size: 20px;
+}
+
+@keyframes flash-red {
+    0% { background-color: #ff4d4d; }
+    50% { background-color: white; }
+    100% { background-color: #ff4d4d; }
+}
+
+.cell.invalid-flash {
+    animation: flash-red 0.5s ease-in-out 2;
+}
+
+#message {
+    color: red;
+    font-size: 18px;
+    margin-bottom: 20px;
+    height: 24px; /* Prevent layout shift */
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#message.show {
+    opacity: 1;
+}
+

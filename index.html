@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPRINTLE</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>SPRINTLE</h1>
+
+    <div>
+        <label>Select Time Limit:</label>
+        <select id="time-selector">
+            <option value="120">2 Minutes</option>
+            <option value="300">5 Minutes</option>
+            <option value="420">7 Minutes</option>
+        </select>
+        <button id="start-btn">Start Challenge</button>
+    </div>
+
+    <h2 id="timer">Time: 00:00</h2>
+    <h3 id="score">Words Solved: 0</h3>
+    <div id="message"></div> <!-- New message area -->
+    <div id="game-board"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
