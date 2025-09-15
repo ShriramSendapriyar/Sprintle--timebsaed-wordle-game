@@ -70,3 +70,27 @@ input, select, button {
     opacity: 1;
 }
 
+.keyboard {
+    display: grid;
+    grid-template-columns: repeat(10, 40px);
+    gap: 5px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.key {
+    width: 40px;
+    height: 40px;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border-radius: 4px;
+    user-select: none;
+}
+
+.key.used {
+    background-color: #bbb;
+    color: #fff;
+}
