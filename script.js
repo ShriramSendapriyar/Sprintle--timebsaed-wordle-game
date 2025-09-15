@@ -1,4 +1,5 @@
 const board = document.getElementById('game-board');
+const keyboardDiv = document.getElementById('keyboard');
 const startBtn = document.getElementById('start-btn');
 const timeSelector = document.getElementById('time-selector');
 const timerDisplay = document.getElementById('timer');
@@ -13,6 +14,7 @@ let score = 0;
 let totalTime = 0;
 let timerInterval;
 let previousGuesses = new Set();
+const keyElements = {};
 
 // ----------------- Load all valid words from API -----------------
 async function loadValidWords() {
@@ -63,6 +65,33 @@ function createBoard() {
     }
 }
 
+// ----------------- Keyboard -----------------
+function createKeyboard() {
+    const rows = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
+    keyboardDiv.innerHTML = '';
+    keyElements = {};
+    rows.forEach(row => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'keyboard-row';
+        for (let char of row) {
+            const keyBtn = document.createElement('button');
+            keyBtn.className = 'key';
+            keyBtn.textContent = char;
+            keyBtn.disabled = true; // Users don’t click these
+            keyElements[char] = keyBtn;
+            rowDiv.appendChild(keyBtn);
+        }
+        keyboardDiv.appendChild(rowDiv);
+    });
+}
+
+function updateKeyboardColor(letter, color) {
+    if (keyElements[letter]) {
+        keyElements[letter].style.backgroundColor = color;
+        keyElements[letter].style.color = color === '#ccc' ? 'black' : 'white';
+    }
+}
+
 // ----------------- API Validation -----------------
 async function isValidWordAPI(word) {
     const res = await fetch(`http://127.0.0.1:5000/api/validate?word=${word}`);
@@ -75,6 +104,8 @@ function handleKeyPress(e) {
     const row = board.children[currentRow];
     const cells = row.children;
 
+    const key = e.key.toUpperCase();
+
     if (e.key === "Backspace") {
         if (currentCell > 0) {
             currentCell--;
@@ -84,7 +115,7 @@ function handleKeyPress(e) {
         submitGuess();
     } else if (/^[a-zA-Z]$/.test(e.key)) {
         if (currentCell < 5) {
-            cells[currentCell].textContent = e.key.toUpperCase();
+            cells[currentCell].textContent = key;
             currentCell++;
         }
     }
@@ -98,14 +129,12 @@ async function submitGuess() {
         guess += row.children[i].textContent.toUpperCase();
     }
 
-    // Incomplete guess
     if (guess.length !== 5) {
         flashRow(row);
         showMessage('Please fill all 5 letters!');
         return;
     }
 
-    // Duplicate guess
     if (previousGuesses.has(guess)) {
         flashRow(row);
         showMessage('You already guessed this word!');
@@ -114,28 +143,25 @@ async function submitGuess() {
 
     previousGuesses.add(guess);
 
-    // API validation
     if (!(await isValidWordAPI(guess))) {
         flashRow(row);
         showMessage('Invalid word! Try again.');
         return;
     }
 
-    // ----------------- Letter Coloring -----------------
     let wordLetterCount = {};
     for (let ch of currentWord) wordLetterCount[ch] = (wordLetterCount[ch] || 0) + 1;
 
-    // First pass: green
     for (let i = 0; i < 5; i++) {
         const cell = row.children[i];
         if (guess[i] === currentWord[i]) {
             cell.style.backgroundColor = 'green';
             cell.style.color = 'white';
             wordLetterCount[guess[i]]--;
+            updateKeyboardColor(guess[i], 'green');
         }
     }
 
-    // Second pass: yellow/gray
     for (let i = 0; i < 5; i++) {
         const cell = row.children[i];
         if (cell.style.backgroundColor) continue;
@@ -143,13 +169,14 @@ async function submitGuess() {
             cell.style.backgroundColor = 'yellow';
             cell.style.color = 'black';
             wordLetterCount[guess[i]]--;
+            updateKeyboardColor(guess[i], 'yellow');
         } else {
             cell.style.backgroundColor = '#ccc';
             cell.style.color = 'black';
+            updateKeyboardColor(guess[i], '#ccc');
         }
     }
 
-    // ----------------- Check Correct / Next Word -----------------
     if (guess === currentWord) {
         score++;
         scoreDisplay.textContent = `Words Solved: ${score}`;
@@ -182,6 +209,7 @@ async function nextWord() {
     currentCell = 0;
     previousGuesses.clear();
     createBoard();
+    createKeyboard();
     currentWord = pickRandomWord();
 }
 
@@ -196,6 +224,7 @@ async function startGame() {
     timeSelector.disabled = true;
 
     createBoard();
+    createKeyboard();
     currentWord = pickRandomWord();
     updateTimerDisplay(totalTime);
 
@@ -208,7 +237,6 @@ async function startGame() {
         if (totalTime <= 0) {
             clearInterval(timerInterval);
             document.removeEventListener('keydown', handleKeyPress);
-            // Redirect to results page
             window.location.href = `result.html?score=${score}`;
         }
     }, 1000);
