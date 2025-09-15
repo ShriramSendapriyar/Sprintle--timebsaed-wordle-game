@@ -65,11 +65,14 @@ function createBoard() {
     }
 }
 
-// ----------------- Keyboard -----------------
+//----------------- Keyboard -----------------
 function createKeyboard() {
     const rows = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
     keyboardDiv.innerHTML = '';
-    keyElements = {};
+    
+    // Clear the object instead of reassigning it
+    Object.keys(keyElements).forEach(key => delete keyElements[key]);
+
     rows.forEach(row => {
         const rowDiv = document.createElement('div');
         rowDiv.className = 'keyboard-row';
@@ -77,13 +80,13 @@ function createKeyboard() {
             const keyBtn = document.createElement('button');
             keyBtn.className = 'key';
             keyBtn.textContent = char;
-            keyBtn.disabled = true; // Users don’t click these
             keyElements[char] = keyBtn;
             rowDiv.appendChild(keyBtn);
         }
         keyboardDiv.appendChild(rowDiv);
     });
 }
+
 
 function updateKeyboardColor(letter, color) {
     if (keyElements[letter]) {
@@ -231,15 +234,20 @@ async function startGame() {
     document.addEventListener('keydown', handleKeyPress);
 
     timerInterval = setInterval(() => {
-        totalTime--;
-        updateTimerDisplay(totalTime);
+    totalTime--;
+    updateTimerDisplay(totalTime);
 
-        if (totalTime <= 0) {
-            clearInterval(timerInterval);
-            document.removeEventListener('keydown', handleKeyPress);
+    if (totalTime <= 0) {
+        clearInterval(timerInterval);
+        document.removeEventListener('keydown', handleKeyPress);
+        
+        showMessage(`Time's up! The correct word was: ${currentWord}`);
+
+        setTimeout(() => {
             window.location.href = `result.html?score=${score}`;
-        }
-    }, 1000);
+        }, 3000);
+    }
+}, 1000);
 }
 
 startBtn.addEventListener('click', startGame);

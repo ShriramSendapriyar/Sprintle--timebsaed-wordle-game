@@ -71,11 +71,17 @@ input, select, button {
 }
 
 .keyboard {
-    display: grid;
-    grid-template-columns: repeat(10, 40px);
-    gap: 5px;
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-top: 20px;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 10px;
 }
 
 .key {
